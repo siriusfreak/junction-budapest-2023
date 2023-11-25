@@ -16,8 +16,17 @@ RUN wget https://huggingface.co/openai/whisper-large-v3/resolve/main/tokenizer_c
 RUN wget https://huggingface.co/openai/whisper-large-v3/resolve/main/preprocessor_config.json?download=true -O preprocessor_config.json
 RUN wget https://huggingface.co/openai/whisper-large-v3/resolve/main/generation_config.json?download=true -O generation_config.json
 
-COPY requirements.txt /requirements.txt
-RUN python3.11 -m pip  install -r /requirements.txt
+# Poetry installing
+RUN pip3 install poetry
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock* /app/
+
+# Dependencies installing
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
+
 
 WORKDIR /app
 COPY app.py app.py

@@ -81,7 +81,7 @@ def print_outputs(outputs, gambar):
 
   return result_image, eyes
 
-@app.post("/predict/")
+@app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="The uploaded file is not an image.")

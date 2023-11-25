@@ -13,7 +13,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 app = FastAPI()
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-print(DEVICE)
 
 mtcnn = MTCNN(
     select_largest=False,
@@ -34,7 +33,7 @@ model.to(DEVICE)
 model.eval()
 
 
-@app.post("/predict/")
+@app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="The uploaded file is not an image.")

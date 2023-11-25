@@ -11,8 +11,14 @@ RUN mkdir -p /app/checkpoints
 WORKDIR /app/checkpoints
 RUN wget https://huggingface.co/spaces/Kimata/multimodal_deepfake_detection/resolve/main/checkpoints/model.pth?download=true -O model.pth
 
-COPY requirements.txt /requirements.txt
-RUN python3.11 -m pip  install -r /requirements.txt
+# Dependencies installing
+RUN pip3 install poetry
+
+COPY pyproject.toml poetry.lock* /app/
+
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
+
 
 WORKDIR /app
 COPY models models

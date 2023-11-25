@@ -20,11 +20,16 @@ RUN ln -s /usr/bin/g++-11 /usr/bin/g++
 
 RUN python3.8 -m pip install dlib==19.24.2 --config-settings="DLIB_USE_CUDA=1 --allow-unsupported-compiler" -vvv
 
-COPY requirements.txt /requirements.txt
-RUN python3.8 -m pip  install -r /requirements.txt
+RUN pip3 install poetry
 
-RUN mkdir /app
 WORKDIR /app
+
+COPY pyproject.toml poetry.lock* /app/
+
+# Dependencies installing
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
+
 COPY av_hubert av_hubert
 RUN python3.8 -m pip install file:///app/av_hubert/fairseq
 
