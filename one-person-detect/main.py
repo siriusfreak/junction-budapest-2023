@@ -16,8 +16,8 @@ else:
     DEVICE = 'cpu'
 print("model device: ", DEVICE)
 
-MAX_VIDEO_LEN_SECOND = os.getenv('MAX_VIDEO_LEN_SECOND', 30)
-MAX_FPS = os.getenv('MAX_FPS', 30)
+MAX_VIDEO_LEN_SECOND = int(os.getenv('MAX_VIDEO_LEN_SECOND', 30))
+MAX_FPS = int(os.getenv('MAX_FPS', 30))
 
 model = YOLO('ultralyticsplus/yolov8l.pt')
 model.overrides['conf'] = float(os.getenv('CONF_THRESHOLD', 0.25))
