@@ -58,7 +58,7 @@ services:
       IOU_THRESHOLD: "0.45"
       AGNOSTIC_NMS: "False"
       MAX_DET: "1000"
-      MAX_VIDEO_LENGHT_SECOND: "30"
+      MAX_VIDEO_LEN_SECOND: "30"
       MAX_FPS: "200"
     deploy:
       resources:

@@ -6,7 +6,7 @@ import base64
 service_url = "http://localhost:8000/upload"
 
 # Путь к папке с MP4 файлами
-directory_path = "./"
+directory_path = "./videos/"
 save_directory_path = "./frames/"
 # Перебираем все MP4 файлы в папке
 for filename in os.listdir(directory_path):
@@ -22,8 +22,6 @@ for filename in os.listdir(directory_path):
                     "processed_percent": 50,
                     "confidence_threshold": 0.3,
                     "skip_milliseconds": 1000,
-                    "max_video_length_second": 150,
-                    "max_fps": 200
                 }
             )
 
