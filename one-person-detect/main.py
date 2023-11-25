@@ -16,7 +16,7 @@ else:
     DEVICE = 'cpu'
 print("model device: ", DEVICE)
 
-MAX_VIDEO_LENGHT_SECOND = os.getenv('MAX_VIDEO_LENGHT_SECOND', 30)
+MAX_VIDEO_LEN_SECOND = os.getenv('MAX_VIDEO_LEN_SECOND', 30)
 MAX_FPS = os.getenv('MAX_FPS', 30)
 
 model = YOLO('ultralyticsplus/yolov8l.pt')
@@ -66,8 +66,8 @@ async def upload_file(
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         video_length = total_frames / fps
 
-        if video_length > MAX_VIDEO_LENGHT_SECOND:
-            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {MAX_VIDEO_LENGHT_SECOND} seconds.")
+        if video_length > MAX_VIDEO_LEN_SECOND:
+            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {MAX_VIDEO_LEN_SECOND} seconds.")
 
         if fps > MAX_FPS:
             raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {MAX_FPS}.")
