@@ -1,11 +1,8 @@
-import numpy as np
+import base64
 import io
-from tensorflow.keras.models import load_model
-import imutils
-import matplotlib.pyplot as plt
+import numpy as np
 import cv2
 import numpy as np
-from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image
 import pathlib
 import tensorflow
@@ -13,6 +10,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 
 app = FastAPI()
 
+PROB_THRESHOLD = 0.4 # Minimum probably to show results.
 class Model:
     def __init__(self, model_filepath):
         self.graph_def = tensorflow.compat.v1.GraphDef()
@@ -23,8 +21,8 @@ class Model:
         self.input_name = input_names[0]
         self.input_shape = self._get_input_shape(self.graph_def, self.input_name)
 
-    def predict(self, image):
-        image = image.resize(self.input_shape)
+    def predict(self, image_filepath):
+        image = Image.fromarray(image_filepath).resize(self.input_shape)
         input_array = np.array(image, dtype=np.float32)[np.newaxis, :, :, :]
 
         with tensorflow.compat.v1.Session() as sess:
@@ -57,29 +55,31 @@ class Model:
                 return [dim.size for dim in node.attr['shape'].shape.dim][1:3]
 
 def print_outputs(outputs, gambar):
-    PROB_THRESHOLD = 0.4 # Minimum probably to show results.
+  image = gambar
+  assert set(outputs.keys()) == set(['detected_boxes', 'detected_classes', 'detected_scores'])
+  l, t, d = image.shape
+  labelopen = open("labels.txt", 'r')
+  labels = [line.split(',') for line in labelopen.readlines()]
 
-    image = gambar
-    assert set(outputs.keys()) == set(['detected_boxes', 'detected_classes', 'detected_scores'])
-    l, t, d = image.shape
-    labelopen = open("labels.txt", 'r')
+  result_image = None
+  eyes = []
+  for box, class_id, score in zip(outputs['detected_boxes'][0], outputs['detected_classes'][0], outputs['detected_scores'][0]):
+    if score > PROB_THRESHOLD:
+      print(f"Label: {class_id}, Probability: {score:.5f}, box: ({box[0]:.5f}, {box[1]:.5f}) ({box[2]:.5f}, {box[3]:.5f})")
+      x = box[0] * t
+      y = box[1] * l
+      h = box[2] * t
+      w =  box[3] * l
+      result_image = cv2.rectangle(image, (int(x), int(y)), (int(h), int(w)),  (255,215,0), 3)
+      cv2.putText(result_image, labels[int(class_id)][0], (int(x), int(y)-10), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 0.5, color = (255,215,0), thickness = 2)
+      
+      if class_id == 0:
+        eyes.append("open")
+      else:
+        eyes.append("closed")
+          
 
-    labels = [line.split(',') for line in labelopen.readlines()]
-
-    for box, class_id, score in zip(outputs['detected_boxes'][0], outputs['detected_classes'][0], outputs['detected_scores'][0]):
-        if score > PROB_THRESHOLD:
-            print(f"Label: {class_id}, Probability: {score:.5f}, box: ({box[0]:.5f}, {box[1]:.5f}) ({box[2]:.5f}, {box[3]:.5f})")
-            x = box[0] * t
-            y = box[1] * l
-            h = box[2] * t
-            w =  box[3] * l
-            result_image = cv2.rectangle(image, (int(x), int(y)), (int(h), int(w)),  (255,215,0), 3)
-            cv2.putText(result_image, labels[int(class_id)][0], (int(x), int(y)-10), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 0.5, color = (255,215,0), thickness = 2)
-    
-        return result_image
-
-p = pathlib.Path("model.pb")
-model = Model(p)
+  return result_image, eyes
 
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
@@ -91,10 +91,25 @@ async def predict(file: UploadFile = File(...)):
     try:
         image_stream = io.BytesIO(contents)
         image = Image.open(image_stream)
+        image.resize((500, 500))
+
+        gambar = np.array(image)
     except IOError:
         raise HTTPException(status_code=400, detail="Invalid image file.")
 
-    outputs = model.predict(image)
-    
-    return print_outputs(outputs, image)
 
+
+    p = pathlib.Path("model.pb")
+    model = Model(p)
+    outputs = model.predict(gambar)
+    
+    face_with_mask, eyes = print_outputs(outputs, gambar)
+    mask = Image.fromarray(face_with_mask, 'RGB')
+    buffer = io.BytesIO()
+    mask.save(buffer, format="JPEG")
+
+
+    if mask is None:
+        raise HTTPException(status_code=400, detail="No face detected")
+
+    return {"eyes":eyes, "eyes_mask": base64.b64encode(buffer.getvalue()).decode('utf-8')}
