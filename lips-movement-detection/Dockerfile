@@ -28,10 +28,10 @@ WORKDIR /app
 COPY av_hubert av_hubert
 RUN python3.8 -m pip install file:///app/av_hubert/fairseq
 
-COPY model.pt model.pt
-COPY 20words_mean_face.npy 20words_mean_face.npy
-COPY shape_predictor_68_face_landmarks.dat shape_predictor_68_face_landmarks.dat
-COPY mmod_human_face_detector.dat mmod_human_face_detector.dat
+RUN wget https://huggingface.co/vumichien/AV-HuBERT/resolve/main/model.pt?download=true -O model.pt
+RUN wget https://huggingface.co/spaces/vumichien/Lip_movement_reading/resolve/main/mmod_human_face_detector.dat?download=true -O mmod_human_face_detector.dat
+RUN wget https://huggingface.co/spaces/vumichien/Lip_movement_reading/resolve/main/20words_mean_face.npy?download=true -O 20words_mean_face.npy
+RUN wget https://huggingface.co/spaces/vumichien/Lip_movement_reading/resolve/main/shape_predictor_68_face_landmarks.dat?download=true -O shape_predictor_68_face_landmarks.dat
 
 COPY app.py app.py
 
