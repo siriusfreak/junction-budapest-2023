@@ -16,6 +16,9 @@ else:
     DEVICE = 'cpu'
 print("model device: ", DEVICE)
 
+MAX_VIDEO_LENGHT_SECOND = os.getenv('MAX_VIDEO_LENGHT_SECOND', 30)
+MAX_FPS = os.getenv('MAX_FPS', 30)
+
 model = YOLO('ultralyticsplus/yolov8l.pt')
 model.overrides['conf'] = float(os.getenv('CONF_THRESHOLD', 0.25))
 model.overrides['iou'] = float(os.getenv('IOU_THRESHOLD', 0.45))
@@ -30,8 +33,6 @@ async def upload_file(
     processed_percent: int = 1,
     confidence_threshold: float = 0.3,
     skip_milliseconds: int = 1,
-    max_video_length_second: int = 30,
-    max_fps: int = 200
 ):
     """
     This endpoint receives a video file and processes it to detect frames with exactly one person.
@@ -41,8 +42,6 @@ async def upload_file(
     - processed_percent: The percent of frames to process.
     - confidence_threshold: Confidence threshold for person detection.
     - skip_milliseconds: Milliseconds to skip after a non-compliant frame is found.
-    - max_video_length_second: The maximum length of video in seconds.
-    - max_fps: The maximum frames per second.
 
     Returns:
     - frames: Base64 encoded frames where exactly one person was detected.
@@ -67,10 +66,10 @@ async def upload_file(
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         video_length = total_frames / fps
 
-        if video_length > max_video_length_second:
+        if video_length > MAX_VIDEO_LENGHT_SECOND:
             raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {max_video_length_second} seconds.")
 
-        if fps > max_fps:
+        if fps > MAX_FPS:
             raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {max_fps}.")
 
         frame_step = max(int(100 / processed_percent), 1)
