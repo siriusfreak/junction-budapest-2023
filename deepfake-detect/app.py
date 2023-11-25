@@ -8,7 +8,6 @@ import cv2
 from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
-import time
 from fastapi import FastAPI, UploadFile, File, HTTPException
 
 app = FastAPI()
@@ -48,8 +47,6 @@ async def predict(file: UploadFile = File(...)):
     except IOError:
         raise HTTPException(status_code=400, detail="Invalid image file.")
 
-    start = time.time()
-
     face = mtcnn(image)
     if face is None:
         raise HTTPException(status_code=400, detail="no face detected")
@@ -87,9 +84,6 @@ async def predict(file: UploadFile = File(...)):
             'real': real_prediction,
             'fake': fake_prediction
         }
-
-    end = time.time()
-    print(end - start)
 
     mask = Image.fromarray(face_with_mask, 'RGB')
     buffer = io.BytesIO()
