@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "deepfake-detect"
+version = "0.1.0"
+description = ""
+authors = ["Roman Niklolaev <monobearotaku@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+gradio = "3.0.9"
+pillow = "^10.1.0"
+facenet-pytorch = "2.5.2"
+torch = "1.11.0"
+opencv-python = "^4.8.1.78"
+grad-cam = "^1.4.8"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
+opencv-python-headless = "^4.8.1.78"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
