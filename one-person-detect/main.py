@@ -67,10 +67,10 @@ async def upload_file(
         video_length = total_frames / fps
 
         if video_length > MAX_VIDEO_LENGHT_SECOND:
-            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {max_video_length_second} seconds.")
+            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {MAX_VIDEO_LENGHT_SECOND} seconds.")
 
         if fps > MAX_FPS:
-            raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {max_fps}.")
+            raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {MAX_FPS}.")
 
         frame_step = max(int(100 / processed_percent), 1)
         skip_frames = max(int(fps * skip_milliseconds / 1000), 1)
