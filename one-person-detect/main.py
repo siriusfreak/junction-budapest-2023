@@ -27,10 +27,10 @@ model.overrides['max_det'] = int(os.getenv('MAX_DET', 1000))
 model.to(DEVICE)
 app = FastAPI()
 
-@app.post("/upload/")
+@app.post("/predict")
 async def upload_file(
     video: UploadFile = File(...),
-    processed_percent: int = 1,
+    processed_percent: int = 100,
     confidence_threshold: float = 0.3,
     skip_milliseconds: int = 1,
 ):
