@@ -1,0 +1,4 @@
+torch~=2.1.1
+fastapi~=0.104.1
+opencv-python~=4.7.0.72
+ultralyticsplus~=0.0.28
