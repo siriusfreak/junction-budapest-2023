@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   deepfake-detect:
-    image: deepfake-detect:v1
+    build: deepfake-detect/.
     ports:
      - 8000:8000
     deploy:
