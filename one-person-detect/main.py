@@ -33,6 +33,22 @@ async def upload_file(
     max_video_length_second: int = 30,
     max_fps: int = 200
 ):
+    """
+    This endpoint receives a video file and processes it to detect frames with exactly one person.
+
+    Args:
+    - video: A video file to be uploaded.
+    - processed_percent: The percent of frames to process.
+    - confidence_threshold: Confidence threshold for person detection.
+    - skip_milliseconds: Milliseconds to skip after a non-compliant frame is found.
+    - max_video_length_second: The maximum length of video in seconds.
+    - max_fps: The maximum frames per second.
+
+    Returns:
+    - frames: Base64 encoded frames where exactly one person was detected.
+    - total_frames: The total number of frames in the video.
+    - processed_frames: The total number of frames processed.
+    """
     if processed_percent > 100 or processed_percent <= 0:
         raise HTTPException(status_code=400, detail="Processed percent must be between 0 and 100.")
 

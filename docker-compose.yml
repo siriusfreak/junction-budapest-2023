@@ -53,6 +53,11 @@ services:
 
   one-person-detect:
     image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/one-person-detect:v1
+    environment:
+      CONF_THRESHOLD: "0.25"
+      IOU_THRESHOLD: "0.45"
+      AGNOSTIC_NMS: "False"
+      MAX_DET: "1000"
     deploy:
       resources:
         reservations:
