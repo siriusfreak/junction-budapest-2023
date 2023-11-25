@@ -58,7 +58,7 @@ services:
       IOU_THRESHOLD: "0.45"
       AGNOSTIC_NMS: "False"
       MAX_DET: "1000"
-      MAX_VIDEO_LEN_SECOND: "30"
+      MAX_VIDEO_LENGHT_SECOND: "30"
       MAX_FPS: "200"
     deploy:
       resources:
@@ -68,6 +68,13 @@ services:
               count: 1
               capabilities: [gpu]
 
+  redis:
+    image: redis:latest
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
 
   nginx:
     image: nginx:latest
@@ -82,3 +89,6 @@ services:
       - lips-movement-detection
       - whisper-large-v3
       - one-person-detect
+
+volumes:
+  redis-data:

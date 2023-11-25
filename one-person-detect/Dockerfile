@@ -12,19 +12,16 @@ ENV MAX_DET=1000
 ENV MAX_VIDEO_LEN_SECOND=30
 ENV MAX_FPS=200
 
-COPY requirements.txt requirements.txt
+RUN pip3 install poetry
 
-RUN pip3 install --no-cache-dir -r requirements.txt
-RUN pip3 install python-multipart
-RUN pip3 install uvicorn
+COPY pyproject.toml poetry.lock* /app/
+
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 COPY main.py .
-COPY requirements.txt .
 COPY ultralyticsplus /app/ultralyticsplus
-
-ENV PATH="${PATH}:/path/to/uvicorn"
 
 EXPOSE 8000
 
-ENTRYPOINT ["uvicorn"]
-CMD ["main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

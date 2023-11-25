@@ -9,7 +9,7 @@ RUN apt-get update && \
 ENV CONDA_AUTO_UPDATE_CONDA=false \
     PATH=/opt/miniconda/bin:$PATH
 
-RUN curl -sLo ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Linux-x86_64.sh \
+RUN curl -sLo ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py39_23.10.0-1-Linux-x86_64.sh \
     && chmod +x ~/miniconda.sh \
     && ~/miniconda.sh -b -p /opt/miniconda \
     && rm ~/miniconda.sh \
@@ -36,8 +36,8 @@ RUN apt-get update \
     && apt-get install -y libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /usr/src/app
 RUN wget https://huggingface.co/spaces/aaronespasa/deepfake-detection/resolve/main/resnetinceptionv1_epoch_32.pth -O resnetinceptionv1_epoch_32.pth
+COPY . /usr/src/app
 
 EXPOSE 8000
 

@@ -5,11 +5,11 @@ description = ""
 authors = ["Roman Niklolaev <monobearotaku@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.9,<3.10"
 gradio = "3.0.9"
 pillow = "^10.1.0"
 facenet-pytorch = "2.5.2"
-torch = "1.11.0"
+torch = "1.13.0"
 opencv-python = "^4.8.1.78"
 grad-cam = "^1.4.8"
 fastapi = "^0.104.1"
