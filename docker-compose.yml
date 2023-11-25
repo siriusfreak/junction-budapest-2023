@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   deepfake-detect:
-    image: deepfake-detect:v1
+    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/deepfake-detect:v1
     ports:
      - 8000:8000
     deploy:
@@ -14,9 +14,9 @@ services:
               capabilities: [gpu]
 
   open-closed-eye-detect:
-    image: open-closed-eye-detect:v1
+    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/open-closed-eye-detect:v1
     ports:
-     - 8888:8000
+     - 8001:8000
     deploy:
       resources:
         reservations:
@@ -24,4 +24,41 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+              
+  audio-fake-detection:
+    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/audio-fake-detection:latest
+    ports:
+     - 8002:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  
+  lips-movement-detection:
+    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/lips-movement-detection:latest
+    ports:
+     - 8003:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  whisper-large-v3:
+    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/whisper-large-v3:latest
+    ports:
+     - 8004:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
 

@@ -2,6 +2,7 @@ FROM nvidia/cuda:11.8.0-runtime-ubuntu20.04
 
 # Anaconda installing
 RUN apt-get update && \
+    apt-get install -y wget && \
     apt-get install --no-install-recommends -y curl && \
     apt-get install -y libsm6 libxext6 libxrender-dev
 
@@ -36,6 +37,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /usr/src/app
+RUN wget https://huggingface.co/spaces/aaronespasa/deepfake-detection/resolve/main/resnetinceptionv1_epoch_32.pth -O resnetinceptionv1_epoch_32.pth
 
 EXPOSE 8000
 
