@@ -3,3 +3,4 @@
 *.dat
 *.npy
 env
+fairseq/build/
