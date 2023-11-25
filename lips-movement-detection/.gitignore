@@ -1,6 +1,6 @@
 .idea
-*.pt
-*.dat
-*.npy
 env
 fairseq/build/
+*.pt
+*.npy
+*.dat
