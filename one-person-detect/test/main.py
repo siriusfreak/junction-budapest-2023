@@ -18,7 +18,6 @@ for filename in os.listdir(directory_path):
                 service_url,
                 files={"video": video_file},
                 params={
-                    "processed_frame_per_second": 5,
                     "processed_percent": 50,
                     "confidence_threshold": 0.3,
                     "skip_milliseconds": 1000,
