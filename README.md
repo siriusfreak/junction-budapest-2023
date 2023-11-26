@@ -1,7 +1,9 @@
 # FelineGuard: Whisker Wise Deepfake Detector
+## Presentation
+
 ## GPU requirement
 You need TeslaV100 or higher. Preferred GPU is L40
-
+[Our presentation](https://docs.google.com/presentation/d/1BfM6qaNuU4hnDgIUuWwPxeUEIKIMI6CNc9MwmLWAYjs/edit#slide=id.ged86f964b3_0_0)
 ## Installation
 
 1. Install docker following [official guide](https://docs.docker.com/engine/install/)
