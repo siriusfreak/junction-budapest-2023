@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"fmt"
 	"orchestrator/internal/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ func statusHandler(getTaskStatusUseCase *usecase.GetTaskStatusUseCase) gin.Handl
 
 		taskStatusResponse, err := getTaskStatusUseCase.GetTaskStatus(c.Request.Context(), uid)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось получить статус"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Не удалось получить статус: %v", err)})
 			return
 		}
 

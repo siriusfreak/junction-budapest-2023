@@ -12,7 +12,7 @@ func (s *Storage) AddOrUpdateTask(ctx context.Context, video *domain.VideoFakeCa
 	if err != nil {
 		return err
 	}
-
+	
 	key := "task:" + video.UID
 
 	exists, err := s.client.Exists(key).Result()

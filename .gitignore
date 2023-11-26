@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 deepfake-detect/resnetinceptionv1_epoch_32.pth
+orchestrator/videos/*

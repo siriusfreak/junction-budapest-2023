@@ -23,6 +23,7 @@ func StartWorker(ctx context.Context, queue interfaces.Queue, videoStorage inter
 		videoStorage: videoStorage,
 		modelClient:  modelClient,
 	}
+	log.Printf("Worker %s started", worker.name)
 
 	for {
 		select {
@@ -55,6 +56,8 @@ func (w *worker) processTask(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("error worker %v with Process: %w", w.name, err)
 	}
+	
+	video.UID = uid
 
 	err = w.tasksStorage.AddOrUpdateTask(ctx, video)
 	if err != nil {

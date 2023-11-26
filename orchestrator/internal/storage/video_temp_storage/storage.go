@@ -3,6 +3,7 @@ package videotempstorage
 import (
 	"context"
 	"os"
+	"fmt"
 	"path/filepath"
 	"time"
 
@@ -29,7 +30,7 @@ func (s *Storage) SaveFile(data []byte) (string, error) {
 	uid := uuid.New().String()
 	filePath := filepath.Join(s.directory, uid)
 	if err := os.WriteFile(filePath, data, 0644); err != nil {
-		return "", err
+		return "", fmt.Errorf("error with WriteFile: %w" ,err)
 	}
 	return uid, nil
 }

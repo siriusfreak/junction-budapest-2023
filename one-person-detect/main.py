@@ -16,7 +16,7 @@ else:
     DEVICE = 'cpu'
 print("model device: ", DEVICE)
 
-MAX_VIDEO_LEN_SECOND = int(os.getenv('MAX_VIDEO_LEN_SECOND', 30))
+MAX_VIDEO_LEN_SECOND = int(os.getenv('MAX_VIDEO_LEN_SECOND', 150))
 MAX_FPS = int(os.getenv('MAX_FPS', 30))
 
 model = YOLO('ultralyticsplus/yolov8l.pt')

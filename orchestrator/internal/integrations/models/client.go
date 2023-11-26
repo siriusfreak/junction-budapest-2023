@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"orchestrator/internal/domain"
 	"time"
@@ -15,7 +14,7 @@ const (
 	AudioFakeDetectionURL    = "http://audio-fake-detection:8000"
 	LipsMovementDetectionURL = "http://lips-movement-detection:8000"
 	WhisperLargeV3URL        = "http://whisper-large-v3:8000"
-	OnePersonDetectURL       = "http://one-person-detect:8000"
+	OnePersonDetectURL       = "http://localhost:8000/one-person-detect/"
 )
 
 type processFunction func(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error)
@@ -30,14 +29,9 @@ func NewModelClientImpl(baseURL string, processFunction processFunction) *ModelC
 	client := &ModelClientImpl{
 		BaseURL: baseURL,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 600 * time.Second,
 		},
 		processFunction: processFunction,
-	}
-
-	err := client.ping()
-	if err != nil {
-		log.Fatalf("cannot reach the server: %v", err)
 	}
 
 	return client

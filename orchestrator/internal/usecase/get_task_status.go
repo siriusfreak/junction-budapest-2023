@@ -12,7 +12,7 @@ type GetTaskStatusUseCase struct {
 
 type TaskStatusResponse struct {
 	CompletionPercentage float64 `json:"completion_percentage"`
-	ConfidenceLevel      bool    `json:"confidence_level,omitempty"`
+	ConfidenceLevel      bool    `json:"confidence_level"`
 }
 
 func NewGetTaskStatusUseCase(taskStorage interfaces.TaskStorage) *GetTaskStatusUseCase {
@@ -40,9 +40,15 @@ func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
 		confidenceLevel = confidenceLevel || *video.OnePersonDetectResult
 	}
 
-	completionPercentage := (float64(filledFields) / float64(totalFields)) * 100
+	if totalFields == filledFields{
+		return TaskStatusResponse{
+			CompletionPercentage: 100,
+			ConfidenceLevel:      confidenceLevel,
+		}
+	}
+
 	return TaskStatusResponse{
-		CompletionPercentage: completionPercentage,
-		ConfidenceLevel:      confidenceLevel,
+		CompletionPercentage: (float64(filledFields) / float64(totalFields)) * 100,
+		ConfidenceLevel:      false,
 	}
 }

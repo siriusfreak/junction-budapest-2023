@@ -53,7 +53,7 @@ func main() {
 
 	router := api.NewRouter(addTaskUseCase, getTaskStatusUseCase)
 
-	router.Run(":8080")
+	router.Run(":8888")
 }
 
 type config struct {
@@ -66,9 +66,9 @@ type config struct {
 
 func getConfig() config {
 	return config{
-		RedisAddr:                   "",
+		RedisAddr:                   "localhost:6379",
 		RedisPass:                   "",
-		VideoStorageDir:             "",
+		VideoStorageDir:             "./videos",
 		VideoStorageTTL:             12 * time.Hour,
 		VideoStorageCleanupInterval: 10 * time.Minute,
 	}

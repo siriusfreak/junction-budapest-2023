@@ -32,7 +32,7 @@ func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte) (
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(), "POST", baseUrl+"/predict", body)
+	req, err := http.NewRequestWithContext(context.Background(), "POST", baseUrl, body)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte) (
 		return nil, fmt.Errorf("error decoding response from OnePersonDetect: %w", err)
 	}
 
-	onePersonDetected := len(result.Frames) > 0
+	onePersonDetected := len(result.Frames) == 0
 
 	return &domain.VideoFakeCandidat{
 		OnePersonDetectResult: &onePersonDetected,
