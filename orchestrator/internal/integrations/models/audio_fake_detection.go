@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
 )
 
-func AudioFakeDetectionProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func AudioFakeDetectionProcess(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error){
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -51,9 +52,11 @@ func AudioFakeDetectionProcess(client *http.Client, baseUrl string, video []byte
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("error decoding response from AudioFakeDetection: %w", err)
 	}
-
+	
 	audioFakeDetection := !result.Fake
-
+	
+	log.Printf("AudioFakeDetectionProcess %+v\n", result)
+	
 	return &domain.VideoFakeCandidat{
 		AudioFakeDetectionResult: &audioFakeDetection,
 	}, nil

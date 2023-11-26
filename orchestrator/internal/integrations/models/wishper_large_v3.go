@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func WishperLargeV3Process(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error){
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -52,7 +52,7 @@ func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte, fo
 	}
 
 	result := string(responseData)
-
+	log.Printf("WishperLargeV3Process %+v\n", result)
 	result = strings.ReplaceAll(result, ",", "")
 	result = strings.ReplaceAll(result, " ", "")
 	result = strings.ReplaceAll(result, ".", "")

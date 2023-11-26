@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"log"
+	"encoding/json"
 	"orchestrator/internal/domain"
 	"orchestrator/internal/interfaces"
 )
@@ -65,18 +67,31 @@ func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
 	//	filledFields++
 	//	confidenceLevel = confidenceLevel && *video.OpenClosedEyeDetect
 	//}
-
+	var response TaskStatusResponse
 	if totalFields == filledFields {
-		return TaskStatusResponse{
+		response = TaskStatusResponse{
 			CompletionPercentage: 100,
 			ConfidenceLevel:      confidenceLevel,
 			VideoFakeCandidat:    *video, 
 		}
+		logTaskStatusResponse(response)
+	}else{
+		response = TaskStatusResponse{
+			CompletionPercentage: (float64(filledFields) / float64(totalFields)) * 100,
+			ConfidenceLevel:      false,
+			VideoFakeCandidat:    *video, 
+		}
 	}
 
-	return TaskStatusResponse{
-		CompletionPercentage: (float64(filledFields) / float64(totalFields)) * 100,
-		ConfidenceLevel:      false,
-		VideoFakeCandidat:    *video, 
-	}
+	return response
+}
+
+
+func logTaskStatusResponse(response TaskStatusResponse) {
+    responseJSON, err := json.MarshalIndent(response, "", "  ")
+    if err != nil {
+        log.Printf("Error marshaling response: %v", err)
+        return
+    }
+    log.Printf("TaskStatusResponse: %s", responseJSON)
 }
