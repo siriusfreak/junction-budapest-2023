@@ -25,11 +25,17 @@ document.getElementById('uploadButton').addEventListener('click', function() {
 });
 
 function uploadVideo(file) {
+    resetCheckResults()
+
     const formData = new FormData();
     formData.append('video', file);
 
     var progressBarContainer = document.getElementById('progressBarContainer');
     var progressBar = document.getElementById('progressBar');
+
+    var detailsContainer = document.getElementById('videoFakeCandidatDetails');
+    detailsContainer.style.display = 'none';
+
     progressBarContainer.style.display = 'block';
     progressBar.style.width = '0%';
     progressBar.textContent = '0%';
@@ -56,6 +62,7 @@ function checkUploadStatus(uid) {
                 updateProgressBar(data.completion_percentage);
                 if (data.completion_percentage === 100) {
                     clearInterval(checkInterval);
+                    displayDetails(data.VideoFakeCandidat);
                     if (data.confidence_level) {
                         displaySuccess();
                     } else {
@@ -72,9 +79,10 @@ function checkUploadStatus(uid) {
 }
 
 function updateProgressBar(percentage) {
+    const roundedPercentage = Math.round(percentage); // Rounds to the nearest whole number
     const progressBar = document.getElementById('progressBar');
-    progressBar.style.width = percentage + '%';
-    progressBar.textContent = percentage + '%';
+    progressBar.style.width = roundedPercentage + '%';
+    progressBar.textContent = roundedPercentage + '%';
 }
 function setUploadControlsEnabled(enabled) {
     document.getElementById('videoInput').disabled = !enabled;
@@ -99,4 +107,15 @@ function displayFail() {
 function resetCheckResults() {
     document.getElementById('successImageContainer').style.display = 'none';
     document.getElementById('failImageContainer').style.display = 'none';
+}
+
+function displayDetails(videoFakeCandidat) {
+    const detailsContainer = document.getElementById('videoFakeCandidatDetails');
+    detailsContainer.innerHTML = `
+        <p>Audio Fake Detection: ${videoFakeCandidat.AudioFakeDetectionResult}</p>
+        <p>Deepfake Detection: ${videoFakeCandidat.DeepfakeDetectResult}</p>
+        <p>Whisper Detection: ${videoFakeCandidat.WhisperLargeV3Result}</p>
+        <p>One Person Detection: ${videoFakeCandidat.OnePersonDetectResult}</p>
+    `;
+    detailsContainer.style.display = 'block';
 }

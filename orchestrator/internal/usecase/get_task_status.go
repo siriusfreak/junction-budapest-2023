@@ -11,8 +11,9 @@ type GetTaskStatusUseCase struct {
 }
 
 type TaskStatusResponse struct {
-	CompletionPercentage float64 `json:"completion_percentage"`
-	ConfidenceLevel      bool    `json:"confidence_level"`
+	CompletionPercentage float64                  `json:"completion_percentage"`
+	ConfidenceLevel      bool         		      `json:"confidence_level"`
+	VideoFakeCandidat 	 domain.VideoFakeCandidat `json:"VideoFakeCandidat"`
 }
 
 func NewGetTaskStatusUseCase(taskStorage interfaces.TaskStorage) *GetTaskStatusUseCase {
@@ -31,7 +32,7 @@ func (uc *GetTaskStatusUseCase) GetTaskStatus(ctx context.Context, uid string) (
 }
 
 func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
-	totalFields := 5
+	totalFields := 4
 	filledFields := 0
 	confidenceLevel := true
 
@@ -45,10 +46,10 @@ func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
 		confidenceLevel = confidenceLevel && *video.DeepfakeDetectResult
 	}
 
-	if video.LipsMovementDetectionResult != nil {
-		filledFields++
-		confidenceLevel = confidenceLevel && *video.LipsMovementDetectionResult
-	}
+	//if video.LipsMovementDetectionResult != nil {
+	//	filledFields++
+	//	confidenceLevel = confidenceLevel && *video.LipsMovementDetectionResult
+	//}
 
 	if video.WhisperLargeV3Result != nil {
 		filledFields++
@@ -60,20 +61,22 @@ func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
 		confidenceLevel = confidenceLevel && *video.AudioFakeDetectionResult
 	}
 
-	if video.OpenClosedEyeDetect != nil {
-		filledFields++
-		confidenceLevel = confidenceLevel && *video.OpenClosedEyeDetect
-	}
+	//if video.OpenClosedEyeDetect != nil {
+	//	filledFields++
+	//	confidenceLevel = confidenceLevel && *video.OpenClosedEyeDetect
+	//}
 
 	if totalFields == filledFields {
 		return TaskStatusResponse{
 			CompletionPercentage: 100,
 			ConfidenceLevel:      confidenceLevel,
+			VideoFakeCandidat:    *video, 
 		}
 	}
 
 	return TaskStatusResponse{
 		CompletionPercentage: (float64(filledFields) / float64(totalFields)) * 100,
 		ConfidenceLevel:      false,
+		VideoFakeCandidat:    *video, 
 	}
 }

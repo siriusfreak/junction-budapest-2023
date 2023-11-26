@@ -78,7 +78,9 @@ def preprocess_video(input_video_path, out_file):
     landmarks = []
     for frame in tqdm(frames):
         landmark = detect_landmark(frame, detector, predictor)
-        landmarks.append(landmark)
+        if landmark is not None:
+            landmarks.append(landmark)
+
     preprocessed_landmarks = landmarks_interpolate(landmarks)
     rois = crop_patch(input_video_path, preprocessed_landmarks, mean_face_landmarks, stablePntsIDs, STD_SIZE, 
                           window_margin=12, start_idx=48, stop_idx=68, crop_height=96, crop_width=96)

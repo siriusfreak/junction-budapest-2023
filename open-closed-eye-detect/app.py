@@ -7,6 +7,9 @@ from PIL import Image
 import pathlib
 import tensorflow
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from tempfile import TemporaryDirectory
+import os
+import shutil
 
 app = FastAPI()
 
@@ -61,55 +64,72 @@ def print_outputs(outputs, gambar):
   labelopen = open("labels.txt", 'r')
   labels = [line.split(',') for line in labelopen.readlines()]
 
-  result_image = None
   eyes = []
   for box, class_id, score in zip(outputs['detected_boxes'][0], outputs['detected_classes'][0], outputs['detected_scores'][0]):
     if score > PROB_THRESHOLD:
-      print(f"Label: {class_id}, Probability: {score:.5f}, box: ({box[0]:.5f}, {box[1]:.5f}) ({box[2]:.5f}, {box[3]:.5f})")
-      x = box[0] * t
-      y = box[1] * l
-      h = box[2] * t
-      w =  box[3] * l
-      result_image = cv2.rectangle(image, (int(x), int(y)), (int(h), int(w)),  (255,215,0), 3)
-      cv2.putText(result_image, labels[int(class_id)][0], (int(x), int(y)-10), fontFace = cv2.FONT_HERSHEY_SIMPLEX, fontScale = 0.5, color = (255,215,0), thickness = 2)
-      
       if class_id == 0:
         eyes.append("open")
       else:
         eyes.append("closed")
           
 
-  return result_image, eyes
+  return eyes
+
+p = pathlib.Path("model.pb")
+model = Model(p)
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="The uploaded file is not an image.")
-
-    contents = await file.read()
+async def predict(video: UploadFile = File(...)):
+    with TemporaryDirectory() as temp_dir:
+        tmp_path = os.path.join(temp_dir, 'temp_video.mp4')
+        with open(tmp_path, 'wb') as tmp_file:
+            shutil.copyfileobj(video.file, tmp_file)
+        cap = cv2.VideoCapture(tmp_path)
 
     try:
-        image_stream = io.BytesIO(contents)
-        image = Image.open(image_stream)
-        image.resize((500, 500))
+        if not cap.isOpened():
+            raise HTTPException(status_code=400, detail="Unable to read video file.")
+            
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        if fps == 0:
+            raise HTTPException(status_code=400, detail="FPS of video is zero, which indicates a problem with the video file.")
 
-        gambar = np.array(image)
-    except IOError:
-        raise HTTPException(status_code=400, detail="Invalid image file.")
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        video_length = total_frames / fps
 
+        if video_length > 20:
+            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {150} seconds.")
 
+        if fps > 60:
+            raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {60}.")
 
-    p = pathlib.Path("model.pb")
-    model = Model(p)
-    outputs = model.predict(gambar)
-    
-    face_with_mask, eyes = print_outputs(outputs, gambar)
-    mask = Image.fromarray(face_with_mask, 'RGB')
-    buffer = io.BytesIO()
-    mask.save(buffer, format="JPEG")
+        frame_count = 0
+        frames = 0
+        processed_count = 0
+        fake = 0
 
+        while True:
+            percent = (frames/total_frames * 100)
+            print(f"{percent:.2f}")
 
-    if mask is None:
-        raise HTTPException(status_code=400, detail="No face detected")
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-    return {"eyes":eyes, "eyes_mask": base64.b64encode(buffer.getvalue()).decode('utf-8')}
+            frames += 1
+            if frames % 2 == 0:
+                continue
+            
+            frame = cv2.resize(frame, (500,500), interpolation = cv2.INTER_AREA)
+
+            outputs = model.predict(frame)
+            eyes = print_outputs(outputs, frame)
+
+            if len(eyes) != 2 or eyes[0] != 1 or eyes[1] != 1:
+                fake += 1
+
+            processed_count += 1
+    finally:
+        cap.release()
+
+    return {"processed_count":processed_count, "fake_eyes": fake}

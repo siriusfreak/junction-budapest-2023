@@ -118,7 +118,7 @@ async def predict(video: UploadFile = File(...)):
                     'fake': fake_prediction
                 }
 
-                if fake_prediction > 0.5:
+                if fake_prediction > 0.8:
                     fake+= 1
             
             processed_count += 1

@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
@@ -52,8 +51,6 @@ func DeepfakeDetectProcess(client *http.Client, baseUrl string, video []byte, fo
 		return nil, fmt.Errorf("error decoding response from DeepfakeDetect: %w", err)
 	}
 
-	log.Println(result)
-	fmt.Println(result)
 	deepfakeDetectResult := result.Fake <= 0.2
 	return &domain.VideoFakeCandidat{
 		DeepfakeDetectResult: &deepfakeDetectResult,

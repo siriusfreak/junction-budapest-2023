@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
@@ -52,8 +51,7 @@ func AudioFakeDetectionProcess(client *http.Client, baseUrl string, video []byte
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("error decoding response from AudioFakeDetection: %w", err)
 	}
-	log.Println(result)
-	fmt.Println(result)
+
 	audioFakeDetection := !result.Fake
 
 	return &domain.VideoFakeCandidat{

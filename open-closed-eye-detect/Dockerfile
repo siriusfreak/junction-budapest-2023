@@ -1,9 +1,10 @@
-FROM nvidia/cuda:11.8.0-runtime-ubuntu20.04
+FROM tensorflow/tensorflow:latest-gpu
 
 # Anaconda installing
 RUN apt-get update && \
     apt-get install --no-install-recommends -y curl && \
-    apt-get install -y libsm6 libxext6 libxrender-dev
+    apt-get install -y libsm6 libxext6 libxrender-dev && \
+    apt-get install -y libcupti-dev
 
 ENV CONDA_AUTO_UPDATE_CONDA=false \
     PATH=/opt/miniconda/bin:$PATH
@@ -25,6 +26,8 @@ RUN pip3 install poetry
 WORKDIR /usr/src/app
 
 COPY pyproject.toml poetry.lock* /usr/src/app/
+RUN pip3 install tensorflow-gpu
+
 
 # Dependencies installing
 RUN poetry config virtualenvs.create false \

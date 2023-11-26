@@ -52,13 +52,15 @@ func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte, fo
 	}
 
 	result := string(responseData)
-	fmt.Println(result)
 
-	result = strings.ReplaceAll(result, " ", "")
 	result = strings.ReplaceAll(result, ",", "")
+	result = strings.ReplaceAll(result, " ", "")
 	result = strings.ReplaceAll(result, ".", "")
-	result = strings.ToLower(result) 
-	whisperLargeV3Result := result == "twozerotwotree" || result == "2023"
+	result = strings.ReplaceAll(result, "\"", "")
+	result = strings.ToLower(result)
+	result = strings.TrimSpace(result)
+
+	whisperLargeV3Result := result == "twozerotwothree" || result == "2023"
 
 	return &domain.VideoFakeCandidat{
 		WhisperLargeV3Result: &whisperLargeV3Result,
