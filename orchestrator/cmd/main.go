@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"orchestrator/internal/api"
 	"orchestrator/internal/integrations/models"
 	"orchestrator/internal/integrations/redis"
+	"orchestrator/internal/interfaces"
 	"orchestrator/internal/queue"
 	tasksstorage "orchestrator/internal/storage/tasks_storage"
 	videotempstorage "orchestrator/internal/storage/video_temp_storage"
+	"orchestrator/internal/usecase"
 	"orchestrator/internal/worker"
 	"time"
 )
@@ -38,6 +41,19 @@ func main() {
 	// go worker.StartWorker(ctx, queueLipsMovementDetection, videoStorage, tasksStorage, nil, "lips-movement-detection")
 	// go worker.StartWorker(ctx, queueOpenClosedEyeDetect, videoStorage, tasksStorage, nil, "open-closed-eye-detect")
 	// go worker.StartWorker(ctx, queueWhisperLargeV3, videoStorage, tasksStorage, nil, "whisper-large-v3")
+	addTaskUseCase := usecase.NewAddTaskUseCase(
+		videoStorage,
+		tasksStorage,
+		[]interfaces.Queue{
+			queueOnePersonDetect,
+		},
+	)
+
+	getTaskStatusUseCase := usecase.NewGetTaskStatusUseCase(tasksStorage)
+
+	router := api.NewRouter(addTaskUseCase, getTaskStatusUseCase)
+
+	router.Run(":8080")
 }
 
 type config struct {
