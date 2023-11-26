@@ -124,12 +124,12 @@ app = FastAPI()
 
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    filename = file.filename
+async def predict(video: UploadFile = File(...)):
+    filename = video.filename
     print("DLIB_CUDA: ", dlib.DLIB_USE_CUDA, flush=True)
     with tempfile.NamedTemporaryFile(suffix=filename) as temp_file:
         # Copy the contents of the uploaded file to the temporary file
-        shutil.copyfileobj(file.file, temp_file)
+        shutil.copyfileobj(video.file, temp_file)
         # Get the path of the temporary file
         temp_file_path = temp_file.name
 

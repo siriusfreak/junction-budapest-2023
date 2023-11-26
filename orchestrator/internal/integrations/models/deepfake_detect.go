@@ -10,7 +10,7 @@ import (
 	"orchestrator/internal/domain"
 )
 
-func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error) {
+func DeepfakeDetectProcess(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -22,10 +22,6 @@ func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte) (
 	if err != nil {
 		return nil, err
 	}
-
-	_ = writer.WriteField("processed_percent", fmt.Sprintf("%d", 50))
-	_ = writer.WriteField("confidence_threshold", fmt.Sprintf("%.2f", 0.85))
-	_ = writer.WriteField("skip_milliseconds", fmt.Sprintf("%d", 1000))
 
 	err = writer.Close()
 	if err != nil {
@@ -45,21 +41,18 @@ func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned non-200 status code from OnePersonDetect: %d", resp.StatusCode)
+		return nil, fmt.Errorf("server returned non-200 status code from DeepfakeDetect: %d", resp.StatusCode)
 	}
 
 	var result struct {
-		Frames          []string `json:"frames"`
-		TotalFrames     int      `json:"total_frames"`
-		ProcessedFrames int      `json:"processed_frames"`
+		Fake float64 `json:"fake"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("error decoding response from OnePersonDetect: %w", err)
 	}
 
-	onePersonDetected := (float32(len(result.Frames)) / float32(result.ProcessedFrames)) < 0.1
-
+	deepfakeDetectResult := result.Fake <= 0.13
 	return &domain.VideoFakeCandidat{
-		OnePersonDetectResult: &onePersonDetected,
+		DeepfakeDetectResult: &deepfakeDetectResult,
 	}, nil
 }

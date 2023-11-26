@@ -31,16 +31,31 @@ func (uc *GetTaskStatusUseCase) GetTaskStatus(ctx context.Context, uid string) (
 }
 
 func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
-	totalFields := 1
+	totalFields := 4
 	filledFields := 0
-	confidenceLevel := false
+	confidenceLevel := true
 
 	if video.OnePersonDetectResult != nil {
 		filledFields++
-		confidenceLevel = confidenceLevel || *video.OnePersonDetectResult
+		confidenceLevel = confidenceLevel && *video.OnePersonDetectResult
 	}
 
-	if totalFields == filledFields{
+	if video.DeepfakeDetectResult != nil {
+		filledFields++
+		confidenceLevel = confidenceLevel && *video.DeepfakeDetectResult
+	}
+
+	if video.LipsMovementDetectionResult != nil {
+		filledFields++
+		confidenceLevel = confidenceLevel && *video.LipsMovementDetectionResult
+	}
+
+	if video.WhisperLargeV3Result != nil {
+		filledFields++
+		confidenceLevel = confidenceLevel && *video.LipsMovementDetectionResult
+	}
+
+	if totalFields == filledFields {
 		return TaskStatusResponse{
 			CompletionPercentage: 100,
 			ConfidenceLevel:      confidenceLevel,

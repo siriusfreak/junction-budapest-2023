@@ -9,11 +9,11 @@ import (
 
 // Определение базового URL для каждого сервиса.
 const (
-	DeepfakeDetectURL        = "http://deepfake-detect:8000"
-	OpenClosedEyeDetectURL   = "http://open-closed-eye-detect:8000"
-	AudioFakeDetectionURL    = "http://audio-fake-detection:8000"
-	LipsMovementDetectionURL = "http://lips-movement-detection:8000"
-	WhisperLargeV3URL        = "http://whisper-large-v3:8000"
+	DeepfakeDetectURL        = "http://localhost:8000/deepfake-detect/"
+	OpenClosedEyeDetectURL   = "http://localhost:8000/open-closed-eye-detect/"
+	AudioFakeDetectionURL    = "http://localhost:8000/audio-fake-detection/"
+	LipsMovementDetectionURL = "http://localhost:8000/lips-movement-detection/"
+	WhisperLargeV3URL        = "http://localhost:8000/whisper-large-v3/"
 	OnePersonDetectURL       = "http://localhost:8000/one-person-detect/"
 )
 

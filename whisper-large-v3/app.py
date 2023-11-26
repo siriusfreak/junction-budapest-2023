@@ -5,7 +5,7 @@ from transformers.pipelines.audio_utils import ffmpeg_read
 
 from fastapi import FastAPI, File, UploadFile
 import shutil
-
+import ffmpeg
 import tempfile
 
 BATCH_SIZE = 8
@@ -20,33 +20,30 @@ pipe = pipeline(
     device=device,
 )
 
-
-def transcribe(audio_path, task):
-    text = pipe({'audio': audio_path}, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
-    return text
-
-
-def file_transcribe(filepath, task):
-    with open(filepath, "rb") as f:
-        inputs = f.read()
-
-    inputs = ffmpeg_read(inputs, pipe.feature_extractor.sampling_rate)
-    inputs = {"array": inputs, "sampling_rate": pipe.feature_extractor.sampling_rate}
-
-    text = pipe(inputs, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
-
-    return text
-
-
 app = FastAPI()
 
-
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    filename = file.filename
-    with tempfile.NamedTemporaryFile(suffix=filename) as temp_file:
-        # Copy the contents of the uploaded file to the temporary file
-        shutil.copyfileobj(file.file, temp_file)
-        # Get the path of the temporary file
-        temp_file_path = temp_file.name
-        return file_transcribe(temp_file_path, "transcribe")
+async def predict(video: UploadFile = File(...)):
+    filename = video.filename
+    with tempfile.NamedTemporaryFile(suffix=filename) as tmp:
+        # Сохраняем файл
+        shutil.copyfileobj(video.file, tmp)
+        tmp_path = tmp.name
+        
+        # Конвертируем mp4 в wav используя ffmpeg
+        process = (
+            ffmpeg
+            .input(tmp_path)
+            .output('pipe:', format='wav')
+            .run_async(pipe_stdout=True, pipe_stderr=True)
+        )
+        out, err = process.communicate()
+        
+        if process.returncode != 0:
+            raise Exception(f"ffmpeg error: {err.decode()}")
+
+        # Транскрибация аудио
+        inputs = {"array": out, "sampling_rate": pipe.feature_extractor.sampling_rate}
+        text = pipe(inputs, batch_size=BATCH_SIZE)["text"]
+        
+        return {"text": text}
