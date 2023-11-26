@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">FelineGuard</div>
+</nav>
+
+<div id="uploadContainer">
+    <div id="instructions">
+        <h1>2 0 2 3</h1>
+        <p>Please record yourself saying these numbers and upload a video up to 20 seconds. You must be visible and alone in the video.</p>
+    </div>
+
+    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+    <button id="customButton">Select Video</button>
+    <button id="uploadButton">Upload Video</button>
+    <div id="fileName"></div>
+
+    <div id="progressBarContainer" style="display:none;">
+        <div id="progressBar" style="width: 0%;"></div>
+    </div>
+
+    <div id="successImageContainer" style="display:none;">
+        <img id="successImage" src="success.png" alt="Success">
+    </div>
+
+    <div id="failImageContainer" style="display:none;">
+        <img id="failImage" src="failure.png" alt="Failure">
+    </div>
+
+    <div id="videoFakeCandidatDetails" style="display:none;"></div>
+</div>
+
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -11,15 +11,15 @@ services:
               count: 1
               capabilities: [gpu]
 
-  open-closed-eye-detect:
-    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/open-closed-eye-detect:v1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+  # open-closed-eye-detect:
+  #   image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/open-closed-eye-detect:v1
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
               
   audio-fake-detection:
     image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/audio-fake-detection:v1
@@ -31,15 +31,15 @@ services:
               count: 1
               capabilities: [gpu]
   
-  lips-movement-detection:
-    image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/lips-movement-detection:v1
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+  # lips-movement-detection:
+  #   image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/lips-movement-detection:v1
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
 
   whisper-large-v3:
     image: europe-west3-docker.pkg.dev/junction-budapest-2023/main/whisper-large-v3:v1
@@ -58,7 +58,7 @@ services:
       IOU_THRESHOLD: "0.45"
       AGNOSTIC_NMS: "False"
       MAX_DET: "1000"
-      MAX_VIDEO_LENGHT_SECOND: "30"
+      MAX_VIDEO_LEN_SECOND: "150"
       MAX_FPS: "200"
     deploy:
       resources:
@@ -84,9 +84,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - deepfake-detect
-      - open-closed-eye-detect
+      # - open-closed-eye-detect
       - audio-fake-detection
-      - lips-movement-detection
+      # - lips-movement-detection
       - whisper-large-v3
       - one-person-detect
 

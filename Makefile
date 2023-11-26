@@ -36,3 +36,6 @@ run:
 down:
 	nvidia-docker compose down
 
+restart:
+	make down
+	make run

@@ -1,0 +1,140 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#uploadContainer {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#uploadButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#uploadButton:hover {
+    background-color: #45a049;
+}
+
+#videoInput {
+    margin-bottom: 10px;
+}
+
+#customButton {
+    background-color: #008CBA;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+}
+
+#customButton:hover {
+    background-color: #007B9E;
+}
+
+#uploadButton:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+#customButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#fileName {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    overflow: hidden;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+#progressBarContainer {
+    width: 100%;
+    background-color: #ddd;
+    margin-top: 10px;
+    border-radius: 10px; /* Rounded corners for the container */
+    overflow: hidden;
+}
+
+#progressBar {
+    height: 20px;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 20px; /* Same as height */
+    color: white;
+    border-radius: 10px;
+}
+
+#successImageContainer {
+    text-align: center; /* Center the image horizontally */
+    margin-top: 10px;
+}
+
+#successImage {
+    width: 100%; /* Make the image take up the full width of its container */
+    max-width: 200px; /* Adjust this to match the width of your button container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#failImageContainer {
+    text-align: center; /* Center the image horizontally */
+    margin-top: 10px;
+}
+
+#failImage {
+    width: 100%; /* Make the image take up the full width of its container */
+    max-width: 200px; /* Adjust this to match the width of your button container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#instructions {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#instructions h1 {
+    font-size: 70px; /* Large size for the year */
+    margin: 0;
+    color: #333; /* Adjust color as needed */
+}
+
+#instructions p {
+    font-size: 16px;
+    color: #666; /* Adjust color as needed */
+    max-width: 240px;
+}

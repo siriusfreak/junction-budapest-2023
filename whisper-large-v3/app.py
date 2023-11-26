@@ -2,10 +2,10 @@ import torch
 
 from transformers import pipeline, AutoModel
 from transformers.pipelines.audio_utils import ffmpeg_read
-
+from audio_extract import extract_audio
 from fastapi import FastAPI, File, UploadFile
 import shutil
-
+import subprocess
 import tempfile
 
 BATCH_SIZE = 8
@@ -20,33 +20,36 @@ pipe = pipeline(
     device=device,
 )
 
-
 def transcribe(audio_path, task):
     text = pipe({'audio': audio_path}, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
     return text
 
 
 def file_transcribe(filepath, task):
-    with open(filepath, "rb") as f:
-        inputs = f.read()
+    with tempfile.NamedTemporaryFile(suffix="audio.mp3") as temp_file:
+        extract_audio(input_path=filepath, output_path="1"+temp_file.name)
 
-    inputs = ffmpeg_read(inputs, pipe.feature_extractor.sampling_rate)
-    inputs = {"array": inputs, "sampling_rate": pipe.feature_extractor.sampling_rate}
+        with open("1"+temp_file.name, "rb") as f:
+            audio = f.read()
 
-    text = pipe(inputs, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
 
-    return text
+        inputs = ffmpeg_read(audio, pipe.feature_extractor.sampling_rate)
+        inputs = {"array": inputs, "sampling_rate": pipe.feature_extractor.sampling_rate}
+
+        text = pipe(inputs, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
+
+        return text
 
 
 app = FastAPI()
 
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    filename = file.filename
+async def predict(video: UploadFile = File(...)):
+    filename = video.filename
     with tempfile.NamedTemporaryFile(suffix=filename) as temp_file:
         # Copy the contents of the uploaded file to the temporary file
-        shutil.copyfileobj(file.file, temp_file)
+        shutil.copyfileobj(video.file, temp_file)
         # Get the path of the temporary file
         temp_file_path = temp_file.name
         return file_transcribe(temp_file_path, "transcribe")

@@ -78,7 +78,9 @@ def preprocess_video(input_video_path, out_file):
     landmarks = []
     for frame in tqdm(frames):
         landmark = detect_landmark(frame, detector, predictor)
-        landmarks.append(landmark)
+        if landmark is not None:
+            landmarks.append(landmark)
+
     preprocessed_landmarks = landmarks_interpolate(landmarks)
     rois = crop_patch(input_video_path, preprocessed_landmarks, mean_face_landmarks, stablePntsIDs, STD_SIZE, 
                           window_margin=12, start_idx=48, stop_idx=68, crop_height=96, crop_width=96)
@@ -124,12 +126,12 @@ app = FastAPI()
 
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    filename = file.filename
+async def predict(video: UploadFile = File(...)):
+    filename = video.filename
     print("DLIB_CUDA: ", dlib.DLIB_USE_CUDA, flush=True)
     with tempfile.NamedTemporaryFile(suffix=filename) as temp_file:
         # Copy the contents of the uploaded file to the temporary file
-        shutil.copyfileobj(file.file, temp_file)
+        shutil.copyfileobj(video.file, temp_file)
         # Get the path of the temporary file
         temp_file_path = temp_file.name
 
