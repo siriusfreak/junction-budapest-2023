@@ -47,12 +47,17 @@ func (w *worker) processTask(ctx context.Context) error {
 		return nil
 	}
 
+	domainVideo, err := w.tasksStorage.GetTask(ctx, uid)
+	if err != nil {
+		return fmt.Errorf("error worker %v with GetTask: %w", w.name, err)
+	}
+
 	bytes, err := w.videoStorage.GetFile(uid)
 	if err != nil {
 		return fmt.Errorf("error worker %v with GetFile: %w", w.name, err)
 	}
 
-	video, err := w.modelClient.Process(bytes)
+	video, err := w.modelClient.Process(bytes, domainVideo.Format)
 	if err != nil {
 		return fmt.Errorf("error worker %v with Process: %w", w.name, err)
 	}

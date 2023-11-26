@@ -22,8 +22,10 @@ func main() {
 
 	OnePersonDetectClient := models.NewModelClientImpl(models.OnePersonDetectURL, models.OnePersonDetectProcess)
 	DeepfakeDetectClient := models.NewModelClientImpl(models.DeepfakeDetectURL, models.DeepfakeDetectProcess)
-	LipsMovementsDetectClient := models.NewModelClientImpl(models.LipsMovementDetectionURL, models.LipsMovementsDetectProcess)
+	// LipsMovementsDetectClient := models.NewModelClientImpl(models.LipsMovementDetectionURL, models.LipsMovementsDetectProcess)
 	WhisperLargeV3Client := models.NewModelClientImpl(models.WhisperLargeV3URL, models.WishperLargeV3Process)
+	AudioFakeDetectionClient := models.NewModelClientImpl(models.AudioFakeDetectionURL, models.AudioFakeDetectionProcess)
+	OpenClosedEyesDetectionClient := models.NewModelClientImpl(models.OpenClosedEyeDetectURL, models.OpenClosedEyesProcess)
 
 	redisClient := redis.CreateRedisClient(ctx, cfg.RedisAddr, cfg.RedisPass, 0)
 
@@ -31,19 +33,17 @@ func main() {
 
 	queueOnePersonDetect := queue.NewQueue(ctx, "one-person-detect", redisClient)
 	queueDeepfakeDetect := queue.NewQueue(ctx, "deepfake-detect", redisClient)
-	queueLipsMovementsDetect := queue.NewQueue(ctx, "lips-movements-detect", redisClient)
+	// queueLipsMovementsDetect := queue.NewQueue(ctx, "lips-movements-detect", redisClient)
 	queueWhisperLargeV3 := queue.NewQueue(ctx, "whisper-large-v3", redisClient)
-
-	// queueAudioFakeDetection := queue.NewQueue(ctx, "audio-fake-detection", redisClient)
-	// queueOpenClosedEyeDetect := queue.NewQueue(ctx, "open-closed-eye-detect", redisClient)
+	queueAudioFakeDetection := queue.NewQueue(ctx, "audio-fake-detection", redisClient)
+	queueOpenClosedEyeDetect := queue.NewQueue(ctx, "open-closed-eye-detect", redisClient)
 
 	go worker.StartWorker(ctx, queueOnePersonDetect, videoStorage, tasksStorage, OnePersonDetectClient, "one-person-detect")
 	go worker.StartWorker(ctx, queueDeepfakeDetect, videoStorage, tasksStorage, DeepfakeDetectClient, "deepfake-detect")
-	go worker.StartWorker(ctx, queueLipsMovementsDetect, videoStorage, tasksStorage, LipsMovementsDetectClient, "lips-movements-detect")
+	// go worker.StartWorker(ctx, queueLipsMovementsDetect, videoStorage, tasksStorage, LipsMovementsDetectClient, "lips-movements-detect")
 	go worker.StartWorker(ctx, queueWhisperLargeV3, videoStorage, tasksStorage, WhisperLargeV3Client, "whisper-large-v3")
-
-	// go worker.StartWorker(ctx, queueAudioFakeDetection, videoStorage, tasksStorage, nil, "audio-fake-detection")
-	// go worker.StartWorker(ctx, queueOpenClosedEyeDetect, videoStorage, tasksStorage, nil, "open-closed-eye-detect")
+	go worker.StartWorker(ctx, queueAudioFakeDetection, videoStorage, tasksStorage, AudioFakeDetectionClient, "audio-fake-detection")
+	go worker.StartWorker(ctx, queueOpenClosedEyeDetect, videoStorage, tasksStorage, OpenClosedEyesDetectionClient, "open-closed-eye-detect")
 
 	addTaskUseCase := usecase.NewAddTaskUseCase(
 		videoStorage,
@@ -51,8 +51,10 @@ func main() {
 		[]interfaces.Queue{
 			queueOnePersonDetect,
 			queueDeepfakeDetect,
-			queueLipsMovementsDetect,
+			// queueLipsMovementsDetect,
 			queueWhisperLargeV3,
+			queueAudioFakeDetection,
+			queueOpenClosedEyeDetect,
 		},
 	)
 

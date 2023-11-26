@@ -1,7 +1,7 @@
 package domain
 
 type VideoFakeCandidat struct {
-	Path                        string
+	Format                      string
 	UID                         string
 	AudioFakeDetectionResult    *bool
 	DeepfakeDetectResult        *bool

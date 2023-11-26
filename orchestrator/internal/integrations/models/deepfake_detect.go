@@ -5,16 +5,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
 )
 
-func DeepfakeDetectProcess(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error) {
+func DeepfakeDetectProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("video", "video.mp4")
+	part, err := writer.CreateFormFile("video", "video"+format)
 	if err != nil {
 		return nil, err
 	}
@@ -48,10 +49,12 @@ func DeepfakeDetectProcess(client *http.Client, baseUrl string, video []byte) (*
 		Fake float64 `json:"fake"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response from OnePersonDetect: %w", err)
+		return nil, fmt.Errorf("error decoding response from DeepfakeDetect: %w", err)
 	}
 
-	deepfakeDetectResult := result.Fake <= 0.13
+	log.Println(result)
+	fmt.Println(result)
+	deepfakeDetectResult := result.Fake <= 0.2
 	return &domain.VideoFakeCandidat{
 		DeepfakeDetectResult: &deepfakeDetectResult,
 	}, nil

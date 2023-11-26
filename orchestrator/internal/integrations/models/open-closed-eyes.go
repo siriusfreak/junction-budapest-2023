@@ -3,15 +3,14 @@ package models
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
 )
 
-func LipsMovementsDetectProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func OpenClosedEyesProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -42,20 +41,23 @@ func LipsMovementsDetectProcess(client *http.Client, baseUrl string, video []byt
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned non-200 status code from LipsMovementDetect: %d", resp.StatusCode)
+		return nil, fmt.Errorf("server returned non-200 status code from OpenClosedEyesDetection: %d", resp.StatusCode)
 	}
 
-	responseData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
+	var result struct {
+		Processed int `json:"processed_count"`
+		Fake      int `json:"fake_eyes"`
 	}
 
-	result := string(responseData)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("error decoding response from OpenClosedEyesDetection: %w", err)
+	}
+
 	fmt.Println(result)
 
-	t := true
+	eyesDetection := (float32(result.Fake) / float32(result.Processed)) <= 0.3
 
 	return &domain.VideoFakeCandidat{
-		LipsMovementDetectionResult: &t,
+		OpenClosedEyeDetect: &eyesDetection,
 	}, nil
 }

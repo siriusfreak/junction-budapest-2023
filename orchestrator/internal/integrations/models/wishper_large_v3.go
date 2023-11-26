@@ -3,18 +3,20 @@ package models
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
+	"strings"
 )
 
-func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error) {
+func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("video", "video.mp4")
+	part, err := writer.CreateFormFile("video", "video"+format)
 	if err != nil {
 		return nil, err
 	}
@@ -44,14 +46,19 @@ func WishperLargeV3Process(client *http.Client, baseUrl string, video []byte) (*
 		return nil, fmt.Errorf("server returned non-200 status code from WishperLargeV3: %d", resp.StatusCode)
 	}
 
-	var result struct {
-		Text string `json:"text"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("error decoding response from WishperLargeV3: %w", err)
+	responseData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	whisperLargeV3Result := result.Text == "2023"
+	result := string(responseData)
+	fmt.Println(result)
+
+	result = strings.ReplaceAll(result, " ", "")
+	result = strings.ReplaceAll(result, ",", "")
+	result = strings.ReplaceAll(result, ".", "")
+	result = strings.ToLower(result) 
+	whisperLargeV3Result := result == "twozerotwotree" || result == "2023"
 
 	return &domain.VideoFakeCandidat{
 		WhisperLargeV3Result: &whisperLargeV3Result,

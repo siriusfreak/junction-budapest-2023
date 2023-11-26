@@ -3,15 +3,15 @@ package models
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
 )
 
-func LipsMovementsDetectProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func AudioFakeDetectionProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -42,20 +42,21 @@ func LipsMovementsDetectProcess(client *http.Client, baseUrl string, video []byt
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned non-200 status code from LipsMovementDetect: %d", resp.StatusCode)
+		return nil, fmt.Errorf("server returned non-200 status code from AudioFakeDetection: %d", resp.StatusCode)
 	}
 
-	responseData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
+	var result struct {
+		Confidence float64 `json:"confidence"`
+		Fake       bool    `json:"fake"`
 	}
-
-	result := string(responseData)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("error decoding response from AudioFakeDetection: %w", err)
+	}
+	log.Println(result)
 	fmt.Println(result)
-
-	t := true
+	audioFakeDetection := !result.Fake
 
 	return &domain.VideoFakeCandidat{
-		LipsMovementDetectionResult: &t,
+		AudioFakeDetectionResult: &audioFakeDetection,
 	}, nil
 }

@@ -17,7 +17,7 @@ const (
 	OnePersonDetectURL       = "http://localhost:8000/one-person-detect/"
 )
 
-type processFunction func(client *http.Client, baseUrl string, video []byte) (*domain.VideoFakeCandidat, error)
+type processFunction func(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error)
 
 type ModelClientImpl struct {
 	BaseURL         string
@@ -50,8 +50,8 @@ func (c *ModelClientImpl) ping() error {
 	return nil
 }
 
-func (c *ModelClientImpl) Process(video []byte) (*domain.VideoFakeCandidat, error) {
-	return c.processFunction(c.HTTPClient, c.BaseURL, video)
+func (c *ModelClientImpl) Process(video []byte, format string) (*domain.VideoFakeCandidat, error) {
+	return c.processFunction(c.HTTPClient, c.BaseURL, video, format)
 }
 
 // Создание клиентов для каждого сервиса.

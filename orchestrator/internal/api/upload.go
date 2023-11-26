@@ -4,6 +4,7 @@ import (
 	"io"
 	"fmt"
 	"net/http"
+	"strings"
 	"orchestrator/internal/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,7 @@ func uploadHandler(addTaskUseCase *usecase.AddTaskUseCase) gin.HandlerFunc {
 			return
 		}
 
-		uid, err := addTaskUseCase.AddTask(c.Request.Context(), data)
+		uid, err := addTaskUseCase.AddTask(c.Request.Context(), data, fileHeader.Filename[strings.LastIndex(fileHeader.Filename, "."):])
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Не удалось добавить задачу: %v", err)})
 			return

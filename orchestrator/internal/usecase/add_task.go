@@ -20,13 +20,14 @@ func NewAddTaskUseCase(videoStorage interfaces.VideoStorage, taskStorage interfa
 	}
 }
 
-func (uc *AddTaskUseCase) AddTask(ctx context.Context, video []byte) (string, error) {
+func (uc *AddTaskUseCase) AddTask(ctx context.Context, video []byte, format string) (string, error) {
 	uid, err := uc.videoStorage.SaveFile(video)
 	if err != nil {
 		return "", err
 	}
 
 	err = uc.taskStorage.AddOrUpdateTask(ctx, &domain.VideoFakeCandidat{
+		Format: format,
 		UID: uid,
 	})
 	if err != nil {

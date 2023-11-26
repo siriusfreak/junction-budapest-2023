@@ -31,7 +31,7 @@ func (uc *GetTaskStatusUseCase) GetTaskStatus(ctx context.Context, uid string) (
 }
 
 func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
-	totalFields := 4
+	totalFields := 5
 	filledFields := 0
 	confidenceLevel := true
 
@@ -52,7 +52,17 @@ func calculateCompletion(video *domain.VideoFakeCandidat) TaskStatusResponse {
 
 	if video.WhisperLargeV3Result != nil {
 		filledFields++
-		confidenceLevel = confidenceLevel && *video.LipsMovementDetectionResult
+		confidenceLevel = confidenceLevel && *video.WhisperLargeV3Result
+	}
+
+	if video.AudioFakeDetectionResult != nil {
+		filledFields++
+		confidenceLevel = confidenceLevel && *video.AudioFakeDetectionResult
+	}
+
+	if video.OpenClosedEyeDetect != nil {
+		filledFields++
+		confidenceLevel = confidenceLevel && *video.OpenClosedEyeDetect
 	}
 
 	if totalFields == filledFields {
