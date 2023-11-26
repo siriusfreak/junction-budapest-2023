@@ -46,20 +46,20 @@ async def predict(video: UploadFile = File(...)):
 
     try:
         if not cap.isOpened():
+            print("Unable to read video file.")
             raise HTTPException(status_code=400, detail="Unable to read video file.")
             
         fps = cap.get(cv2.CAP_PROP_FPS)
         if fps == 0:
+            print("FPS of video is zero, which indicates a problem with the video file.")
             raise HTTPException(status_code=400, detail="FPS of video is zero, which indicates a problem with the video file.")
 
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         video_length = total_frames / fps
 
-        if video_length > 20:
-            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {20} seconds.")
-
-        if fps > 60:
-            raise HTTPException(status_code=400, detail=f"Video FPS is too high. Maximum FPS allowed is {60}.")
+        if video_length > 50:
+            print(f"Video is too long. Maximum length allowed is {50} seconds.")
+            raise HTTPException(status_code=400, detail=f"Video is too long. Maximum length allowed is {50} seconds.")
 
         frame_count = 0
         frames = 0
@@ -123,9 +123,6 @@ async def predict(video: UploadFile = File(...)):
             
             processed_count += 1
             
-        if processed_count / frame_count <= 0.80:
-            raise HTTPException(status_code=400, detail=f"Face must be seen throughout the entire video.")
-
         return {"fake": fake/processed_count}
 
     finally:

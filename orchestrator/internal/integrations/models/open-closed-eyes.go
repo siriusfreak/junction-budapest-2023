@@ -10,7 +10,7 @@ import (
 	"orchestrator/internal/domain"
 )
 
-func OpenClosedEyesProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func OpenClosedEyesProcess(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error){
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 

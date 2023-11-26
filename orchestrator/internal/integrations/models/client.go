@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"net/http"
 	"orchestrator/internal/domain"
 	"time"
@@ -17,37 +16,47 @@ const (
 	OnePersonDetectURL       = "http://localhost:8000/one-person-detect/"
 )
 
-type processFunction func(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error)
+type processFunction func(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error)
+
+type HttpClientWithRetry struct {
+	HTTPClient *http.Client
+	MaxRetries int
+	RetryDelay time.Duration
+}
+
+func (c *HttpClientWithRetry) Do(req *http.Request) (*http.Response, error) {
+	var lastErr error
+	for i := 0; i < c.MaxRetries; i++ {
+		resp, err := c.HTTPClient.Do(req)
+		if err == nil {
+			return resp, nil
+		}
+		lastErr = err
+		time.Sleep(c.RetryDelay)
+	}
+	return nil, lastErr // return the last error encountered
+}
 
 type ModelClientImpl struct {
 	BaseURL         string
 	processFunction processFunction
-	HTTPClient      *http.Client
+	HTTPClient      *HttpClientWithRetry
 }
 
 func NewModelClientImpl(baseURL string, processFunction processFunction) *ModelClientImpl {
 	client := &ModelClientImpl{
 		BaseURL: baseURL,
-		HTTPClient: &http.Client{
-			Timeout: 600 * time.Second,
+		HTTPClient: &HttpClientWithRetry{
+			HTTPClient: &http.Client{
+				Timeout: 600 * time.Second,
+			},
+			MaxRetries: 5, // Define the maximum number of retries
+			RetryDelay: 1 * time.Second, // Define the delay between retries
 		},
 		processFunction: processFunction,
 	}
 
 	return client
-}
-
-func (c *ModelClientImpl) ping() error {
-	resp, err := c.HTTPClient.Get(c.BaseURL) // Используйте конкретный endpoint для проверки доступности
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("server: %s not ready, status code: %d", c.BaseURL, resp.StatusCode)
-	}
-	return nil
 }
 
 func (c *ModelClientImpl) Process(video []byte, format string) (*domain.VideoFakeCandidat, error) {

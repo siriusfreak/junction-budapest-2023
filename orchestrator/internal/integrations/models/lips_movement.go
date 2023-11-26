@@ -11,7 +11,7 @@ import (
 	"orchestrator/internal/domain"
 )
 
-func LipsMovementsDetectProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func LipsMovementsDetectProcess(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error){
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 

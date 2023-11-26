@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"orchestrator/internal/domain"
 )
 
-func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error) {
+func OnePersonDetectProcess(client *HttpClientWithRetry, baseUrl string, video []byte, format string) (*domain.VideoFakeCandidat, error){
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -57,6 +58,7 @@ func OnePersonDetectProcess(client *http.Client, baseUrl string, video []byte, f
 		return nil, fmt.Errorf("error decoding response from OnePersonDetect: %w", err)
 	}
 
+	log.Printf("OnePerson: len(frames): %v, TotalFrames: %v, ProcessedFrames: %v\n", len(result.Frames), result.TotalFrames, result.ProcessedFrames)
 	onePersonDetected := (float32(len(result.Frames)) / float32(result.ProcessedFrames)) < 0.1
 
 	return &domain.VideoFakeCandidat{
