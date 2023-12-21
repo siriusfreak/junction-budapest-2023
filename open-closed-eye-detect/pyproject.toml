@@ -8,7 +8,7 @@ authors = ["Roma <monobearotaku@gmail.com>"]
 python = ">=3.10,<3.12"
 numpy = "^1.26.2"
 opencv-contrib-python = "^4.8.1.78"
-gradio = "^4.7.1"
+gradio = "^4.11.0"
 tensorflow = "^2.15.0"
 imutils = "^0.5.4"
 pathlib = "^1.0.1"
