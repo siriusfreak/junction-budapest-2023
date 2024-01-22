@@ -12,7 +12,7 @@ gradio = "^4.7.1"
 tensorflow = "^2.15.0"
 imutils = "^0.5.4"
 pathlib = "^1.0.1"
-pillow = "^10.1.0"
+pillow = "^10.2.0"
 opencv-python-headless = "^4.8.1.78"
 uvicorn = "^0.24.0.post1"
 
