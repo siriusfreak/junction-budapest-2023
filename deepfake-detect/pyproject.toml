@@ -12,7 +12,7 @@ facenet-pytorch = "2.5.2"
 torch = "1.13.0"
 opencv-python = "^4.8.1.78"
 grad-cam = "^1.4.8"
-fastapi = "^0.104.1"
+fastapi = "^0.109.1"
 uvicorn = "^0.24.0.post1"
 opencv-python-headless = "^4.8.1.78"
 
