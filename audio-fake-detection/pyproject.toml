@@ -11,7 +11,7 @@ torch = "2.1.1"
 numpy = "1.23.3"
 timm = "0.9.12"
 uvicorn = "0.24.0.post1"
-fastapi = "0.104.1"
+fastapi = "0.109.1"
 python-multipart = "0.0.6"
 torchaudio = "2.1.1"
 
