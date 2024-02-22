@@ -6,7 +6,7 @@ authors = ["Roman Niklolaev <monobearotaku@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.10"
-gradio = "3.0.9"
+gradio = "4.19.2"
 pillow = "^10.1.0"
 facenet-pytorch = "2.5.2"
 torch = "1.13.0"
